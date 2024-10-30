@@ -356,6 +356,9 @@ class ProxyInstrumentModule(ProxyMixin, InstrumentBase):
             parameters_with_instrumentname[key] = value
 
         return self.cli.setParameters(parameters_with_instrumentname)
+
+    def _getParamDict(self, attrs: List[str] = ['value'], *args, **kwargs):
+        return self.cli.getParamDict(self.name, attrs, *args, **kwargs)
     
     def __getattr__(self, item):
         try:
