@@ -14,6 +14,7 @@ Core functionality of the instrument server.
 # TODO: can we also create methods remotely?
 
 import os
+import sys
 import importlib
 import inspect
 import logging
@@ -42,6 +43,9 @@ from ..helpers import nestedAttributeFromString, objectClassPath, typeClassPath
 
 __author__ = 'Wolfgang Pfaff', 'Chao Zhou'
 __license__ = 'MIT'
+
+DRIVER_PATH = r"C:\Users\QC109_1_IS\Documents\gui\device"
+sys.path.append(DRIVER_PATH)
 
 logger = logging.getLogger(__name__)
 
@@ -318,23 +322,26 @@ class StationServer(QtCore.QObject):
         return info
 
     def _createInstrument(self, spec: InstrumentCreationSpec) -> None:
-        """Create a new instrument on the server."""
-        sep_class = spec.instrument_class.split('.')
-        modName = '.'.join(sep_class[:-1])
-        clsName = sep_class[-1]
-        mod = importlib.import_module(modName)
-        cls = getattr(mod, clsName)
+            """Create a new instrument on the server."""
+            sep_class = spec.instrument_class.split('.')
+            modName = '.'.join(sep_class[:-1])
+            clsName = sep_class[-1]
+            mod = importlib.import_module(modName)
+            cls = getattr(mod, clsName)
 
-        args = [] if spec.args is None else spec.args
-        kwargs = dict() if spec.kwargs is None else spec.kwargs
+            args = [] if spec.args is None else spec.args
+            kwargs = dict() if spec.kwargs is None else spec.kwargs
 
-        new_instrument = qc.find_or_create_instrument(
-            instrument_class=cls, name=spec.name, *args, **kwargs)
-        if new_instrument.name not in self.station.components:
-            self.station.add_component(new_instrument)
+            if modName in sys.modules:
+                importlib.reload(sys.modules[modName])
 
-            self.instrumentCreated.emit(bluePrintFromInstrumentModule(new_instrument.name, new_instrument),
-                                        args, kwargs)
+            new_instrument = qc.find_or_create_instrument(
+                instrument_class=cls, name=spec.name, *args, **kwargs)
+            if new_instrument.name not in self.station.components:
+                self.station.add_component(new_instrument)
+
+                self.instrumentCreated.emit(bluePrintFromInstrumentModule(new_instrument.name, new_instrument),
+                                            args, kwargs)
 
     def _callObject(self, spec: CallSpec) -> Any:
         """Call some callable found in the station."""

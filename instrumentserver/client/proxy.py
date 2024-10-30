@@ -349,6 +349,19 @@ class ProxyInstrumentModule(ProxyMixin, InstrumentBase):
             else:
                 self.submodules[sn].update()
 
+    def _setParameters(self, parameters: Dict[str, Any]):
+        parameters_with_instrumentname = {}
+        for key, value in parameters.items():
+            key = self.name + '.' + key
+            parameters_with_instrumentname[key] = value
+
+        msg = ServerInstruction(
+            operation=Operation.set_params,
+            set_parameters=parameters_with_instrumentname,
+        )
+        
+        return self.ask(msg)
+    
     def __getattr__(self, item):
         try:
             return super().__getattr__(item)
