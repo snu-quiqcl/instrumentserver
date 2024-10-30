@@ -355,12 +355,7 @@ class ProxyInstrumentModule(ProxyMixin, InstrumentBase):
             key = self.name + '.' + key
             parameters_with_instrumentname[key] = value
 
-        msg = ServerInstruction(
-            operation=Operation.set_params,
-            set_parameters=parameters_with_instrumentname,
-        )
-        
-        return self.ask(msg)
+        return self.cli.setParameters(parameters_with_instrumentname)
     
     def __getattr__(self, item):
         try:
