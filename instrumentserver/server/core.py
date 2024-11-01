@@ -44,8 +44,13 @@ from ..helpers import nestedAttributeFromString, objectClassPath, typeClassPath
 __author__ = 'Wolfgang Pfaff', 'Chao Zhou'
 __license__ = 'MIT'
 
-DRIVER_PATH = r"C:\Users\QC109_1_IS\Documents\gui\device"
-sys.path.append(DRIVER_PATH)
+paths_to_add = ["/Users/shs/Library/Mobile Documents/com~apple~CloudDocs/Drive/QuIQCL/Code/snu-quiqcl/gui/device", 
+                r"C:\Users\QC109_1_IS\Documents\gui\device"
+                ]
+
+for path in paths_to_add:
+    if path not in sys.path:
+        sys.path.append(path)
 
 logger = logging.getLogger(__name__)
 
