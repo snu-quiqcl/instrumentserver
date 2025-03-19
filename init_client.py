@@ -19,9 +19,9 @@ def main(**kwargs):
     ins_cli = Client()
 
     artys7 = ins_cli.find_or_create_instrument(
-        'artys7',
-        'instrumentserver.device.ArtyS7.ArtyS7.ArtyS7',
-        port
+        name = 'artys7',
+        instrument_class='instrumentserver.device.ArtyS7.ArtyS7.ArtyS7',
+        serial_port = port
     )
 
     # Any other instruments
