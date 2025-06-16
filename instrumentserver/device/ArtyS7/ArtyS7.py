@@ -11,7 +11,9 @@ import serial
 import logging
 import numpy as np
 import importlib
+from pathlib import Path
 import sys
+import os
 
 from time import time
 
@@ -35,12 +37,29 @@ class ArtyS7(Instrument):
 
     EXPERIMENT_TIME_RESOLUTION = 1
 
-    def __init__(self, name: str, serial_port: str, **kwargs):
+    def __init__(
+        self, 
+        name: str, 
+        serial_port: str, 
+        *,
+        sequencer_repo: str | os.PathLike | None = None, 
+        **kwargs
+    ):
         super().__init__(name, **kwargs)
         
         self.com = serial.Serial(serial_port, baudrate=57600, timeout=1,
                 parity='N', bytesize=8, stopbits=2, xonxoff=False,
                 rtscts=False, dsrdtr=False, writeTimeout=0)
+
+        # Set up sequencer repository
+        if sequencer_repo is None:
+            # Default to a 'sequencer_programs' directory in the same location as the driver
+            self.sequencer_repo = os.path.join(os.path.dirname(__file__), 'sequencer_programs')
+        else:
+            self.sequencer_repo = sequencer_repo
+        
+        # Create the repository directory if it doesn't exist
+        self.sequencer_repo = Path(self.sequencer_repo).expanduser().resolve()
 
         # Basic Parameters
         self.add_parameter('intensity',
@@ -470,6 +489,9 @@ class ArtyS7(Instrument):
             self._send_command('MANUAL MODE')
         else:
             raise ValueError(f'Invalid mode {mode}')
+        
+        # Consume the ack so the buffer is empty
+        self._read_next_message()
 
     # Load the SequencerProgram
     # s.program()
@@ -489,6 +511,15 @@ class ArtyS7(Instrument):
         except Exception as e:
             raise
 
+    def _resolve_program_path(self, user_path: str | os.PathLike) -> Path:
+        """
+        Return absolute Path of `user_path`.
+        * absolute input → returned unchanged
+        * relative input → interpreted relative to self.program_repo
+        """
+        p = Path(user_path)
+        return p if p.is_absolute() else (self.sequencer_repo / p).resolve()
+
     def _run(self, path : str) -> list:
         '''
         runs a SequencerProgram at the path and returns the entire FIFO
@@ -498,11 +529,15 @@ class ArtyS7(Instrument):
         The sequencer program code must include a function load_sequencer_program that takes a SequencerProgram instance as a parameter.
         The role of the function is to load the commands on to the SequencerProgram instance s.
         '''
+        full_path = self._resolve_program_path(path)
+
+        spec = importlib.util.spec_from_file_location("SequencerCode", full_path)
+        if spec is None or spec.loader is None:
+            raise FileNotFoundError(full_path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+
         s = SequencerProgram.SequencerProgram()
-        loader = importlib.machinery.SourceFileLoader('SequencerCode', path)
-        module = loader.load_module()
-        loader.exec_module(module)
-        
         s = module.load_sequencer_program(s)
         
         self._load_program(s)
