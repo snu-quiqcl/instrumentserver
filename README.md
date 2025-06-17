@@ -1,4 +1,4 @@
-# instrumentserver
+# instrumentserver for Remote Entanglement Experiments
 
 A tool for managing qcodes in a server environment
 
