@@ -140,10 +140,18 @@ class ArtyS7(Instrument):
         self.add_function('load_program',
                         call_cmd=self._load_program,
                         args=[vals.Anything()])
-                        
+        
         self.add_function('run',
                         call_cmd=self._run,
                         args=[vals.Anything()])
+
+        # For AD9912 driver implementation
+        self.add_function('send_command',
+                        call_cmd=self._send_command,
+                        args=[vals.Strings()])
+        self.add_function('send_mod_BTF_int_list',
+                        call_cmd=self._send_mod_BTF_int_list,
+                        args=[vals.Lists(vals.Ints(0, 255))])
 
         self.connect_message()
 
