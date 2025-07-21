@@ -1,0 +1,18 @@
+Signal generator
+  SG384(공식 WEBSITE), 
+  APSYN420(x), 
+  synthHD(windfreak) (옛날 코드)
+  SynthUSB2, 
+  SynthVN
+    
+Motorized stage: KDC101(UniQCon/device/Thorlabs)
+  
+Power supply: E3631A
+  
+OSC: DS1052E, MSO7054
+  
+DDS: AD9912 + FPGA -> UniQCon/device/AD9912
+  
+DAC: DAC8734 + FPGA(x)
+  
+Wavemeter
