@@ -44,9 +44,7 @@ from ..helpers import nestedAttributeFromString, objectClassPath, typeClassPath
 __author__ = 'Wolfgang Pfaff', 'Chao Zhou'
 __license__ = 'MIT'
 
-paths_to_add = ["/Users/shs/Library/Mobile Documents/com~apple~CloudDocs/Drive/QuIQCL/Code/snu-quiqcl/gui/device", 
-                r"C:\Users\QC109_1_IS\Documents\gui\device"
-                ]
+paths_to_add = [r"C:\Users\shonhs0731\Documents\GitHub\qcodes-driver\device"]
 
 for path in paths_to_add:
     if path not in sys.path:
