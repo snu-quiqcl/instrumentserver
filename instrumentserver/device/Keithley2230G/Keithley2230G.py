@@ -107,12 +107,12 @@ class Keithley2230GChannel(InstrumentChannel):
         self._select_channel()
         # return self.parent.ask(f"MEASure:VOLTage? CH{self.channel}")
         return self.parent.ask(f"FETCh:VOLTage? CH{self.channel}")
-    
+
     def _get_current(self) -> float:
         self._select_channel()
         # return self.parent.ask(f"MEASure:CURRent? CH{self.channel}")
         return self.parent.ask(f"FETCh:CURRent? CH{self.channel}")
-    
+
     def _get_power(self) -> float:
         self._select_channel()
         # return self.parent.ask(f"MEASure:POWer? CH{self.channel}")
@@ -179,6 +179,31 @@ class Keithley2230G(VisaInstrument):
             self.add_submodule(ch_name, channel)
 
 
+class Keithley2230G_30_6(VisaInstrument):
+    def __init__(
+        self,
+        name: str,
+        address: str,
+        **kwargs: "Unpack[VisaInstrumentKWArgs]",
+    ):
+        # Keithley 2230G does not support the clear buffer command for some reason.
+        super().__init__(name, address, device_clear=False, **kwargs)
+        self.voltage_limits = [30.0, 30.0, 5.0]  # Voltage limits for channels 1, 2, and 3
+        self.current_limits = [6.0, 6.0, 3.0]  # Current limits for channels 1, 2, and 3
+
+        for i in range(3):
+            ch = i + 1
+            ch_name = f"ch{ch}"
+            channel = Keithley2230GChannel(
+                self,
+                ch_name,
+                ch,
+                voltage_limit=self.voltage_limits[i],
+                current_limit=self.current_limits[i],
+            )
+            self.add_submodule(ch_name, channel)
+
+
 class Keithley2230G_60_3(VisaInstrument):
     def __init__(
         self,
@@ -195,11 +220,11 @@ class Keithley2230G_60_3(VisaInstrument):
             ch = i + 1
             ch_name = f"ch{ch}"
             channel = Keithley2230GChannel(
-                self, 
-                ch_name, 
-                ch, 
-                voltage_limit=self.voltage_limits[i], 
-                current_limit=self.current_limits[i]
+                self,
+                ch_name,
+                ch,
+                voltage_limit=self.voltage_limits[i],
+                current_limit=self.current_limits[i],
             )
             self.add_submodule(ch_name, channel)
 
