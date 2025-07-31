@@ -18,8 +18,6 @@ class SerialPortInstrument(Instrument):
         self._port = port
         self._serial = serial.Serial(port=self._port)
 
-        self._serial.open()
-
     def write(self, cmd: str) -> None:
         super().write(cmd + "\n")
 
