@@ -15,7 +15,8 @@ def select_channel(func):
 
     def wrapper(self, *args, **kwargs):
         self.write(f"C{self.channel_no}")
-        func(self, *args, **kwargs)
+        ret = func(self, *args, **kwargs)
+        return ret
 
     return wrapper
 
