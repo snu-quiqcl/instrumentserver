@@ -1,0 +1,7 @@
+qcodes
+pyzmq
+pandas
+jsonschema
+QtPy5
+bokeh
+numpy
