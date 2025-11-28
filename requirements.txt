@@ -5,3 +5,4 @@ jsonschema
 QtPy5
 bokeh
 numpy
+pyserial
