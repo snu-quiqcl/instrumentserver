@@ -10,3 +10,8 @@ scipy
 pandas
 xarray
 packaging
+bokeh
+pyqt
+pyqt5
+qcodes
+pyserial
