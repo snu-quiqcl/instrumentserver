@@ -566,7 +566,7 @@ class ServerGui(QtWidgets.QMainWindow):
         self.stationObjInfo = StationObjectInfo()
         self.instrumentCreator = InstrumentsCreator(self.client, self._guiConfig)
         self.stationList.componentSelected.connect(self.displayComponentInfo)
-        self.stationList.itemDoubleClicked.connect(self.addInstrumentToGui)
+        self.stationList.itemDoubleClicked.connect(self._onStationItemDoubleClicked)
         self.stationList.closeRequested.connect(self.closeInstrument)
 
         stationWidgets = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
@@ -712,7 +712,10 @@ class ServerGui(QtWidgets.QMainWindow):
 
             self.instrumentCreator.possibleInstrumentDisplay.addInstrumentToTree(
                 instrumentBluePrint.instrument_module_class, instrumentBluePrint.name)
-
+    def _onStationItemDoubleClicked(self, item, column=None):
+        # item에서 blueprint/name 등을 꺼내거나, 내부 dict에서 조회
+        blueprint = self._bluePrints[item.text()]   # 예시
+        self.addInstrumentToGui(blueprint, insArgs=None, insKwargs={})
     def removeInstrumentFromGui(self, name: str):
         """Remove an instrument from the station list."""
         self.stationList.removeObject(name)
