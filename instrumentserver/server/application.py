@@ -1,4 +1,4 @@
-import html
+﻿import html
 import importlib
 import logging
 import os
@@ -566,7 +566,7 @@ class ServerGui(QtWidgets.QMainWindow):
         self.stationObjInfo = StationObjectInfo()
         self.instrumentCreator = InstrumentsCreator(self.client, self._guiConfig)
         self.stationList.componentSelected.connect(self.displayComponentInfo)
-        self.stationList.itemDoubleClicked.connect(self.addInstrumentToGui)
+        self.stationList.itemDoubleClicked.connect(self.addInstrumentTab)
         self.stationList.closeRequested.connect(self.closeInstrument)
 
         stationWidgets = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
@@ -752,6 +752,39 @@ class ServerGui(QtWidgets.QMainWindow):
             self.client.paramsToFile(self._paramValuesFile)
         except Exception as e:
             logger.error(f"Saving failed. {type(e)}: {e.args}")
+
+    @QtCore.Slot(QtWidgets.QTreeWidgetItem, int)
+    def addInstrumentTab(self, item: QtWidgets.QTreeWidgetItem, index: int):
+        """
+        Gets called when the user double clicks and item of the instrument list.
+         Adds a new generic instrument GUI window to the tab bar.
+         If the tab already exists switches to that one.
+        """
+        name = item.text(0)
+        if name not in self.instrumentTabsOpen:
+            ins = self.client.find_or_create_instrument(name)
+            widgetClass = GenericInstrument
+            kwargs = {}
+            # The user might create an instrument that is not in the config file
+            if name in self._guiConfig:
+                # import the widget
+                moduleName = '.'.join(self._guiConfig[name]['gui']['type'].split('.')[:-1])
+                widgetClassName = self._guiConfig[name]['gui']['type'].split('.')[-1]
+                module = importlib.import_module(moduleName)
+                widgetClass = getattr(module, widgetClassName)
+
+                # get any kwargs if the config file has any
+                if 'kwargs' in self._guiConfig[name]['gui']:
+                    kwargs = self._guiConfig[name]['gui']['kwargs']
+
+            insWidget = widgetClass(ins, parent=self, **kwargs)
+            index = self.tabs.addTab(insWidget, ins.name)
+            self.instrumentTabsOpen[ins.name] = insWidget
+            self.tabs.setCurrentIndex(index)
+
+        elif name in self.instrumentTabsOpen:
+            self.tabs.setCurrentWidget(self.instrumentTabsOpen[name])
+
 
     @QtCore.Slot(str)
     def displayComponentInfo(self, name: Union[str, None]):
