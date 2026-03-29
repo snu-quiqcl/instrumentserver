@@ -58,6 +58,17 @@ class SG384(VisaInstrument):
             vals=vals.Numbers(min_value=-47, max_value=13),
         )
         """Parameter amplitude_LF"""
+
+        self.vpp_LF: Parameter = self.add_parameter(
+            name="vpp_LF",
+            label="Power of BNC output",
+            unit="Vpp",
+            get_cmd="AMPL? Vpp",
+            set_cmd="AMPL {:.6f} Vpp",
+            get_parser=float,
+            vals=vals.Numbers(min_value=0.001, max_value=1),
+        )
+        """Parameter vpp_LF"""
         self.amplitude_RF: Parameter = self.add_parameter(
             name="amplitude_RF",
             label="Power of type-N RF output",
@@ -68,33 +79,45 @@ class SG384(VisaInstrument):
             vals=vals.Numbers(min_value=-110, max_value=16.5),
         )
         """Parameter amplitude_RF"""
-        self.amplitude_HF: Parameter = self.add_parameter(
-            name="amplitude_HF",
-            label="Power of RF doubler output",
-            unit="dBm",
-            get_cmd="AMPH?",
-            set_cmd="AMPH {:.2f}",
-            get_parser=float,
-            vals=vals.Numbers(min_value=-10, max_value=13),
-        )
-        """Parameter amplitude_HF"""
-        self.amplitude_clock: Parameter = self.add_parameter(
-            name="amplitude_clock",
-            label="Rear clock output",
+
+        self.vpp_RF: Parameter = self.add_parameter(
+            name="vpp_RF",
+            label="Power of type-N RF output",
             unit="Vpp",
-            get_cmd="AMPC?",
-            set_cmd="AMPC {:.2f}",
+            get_cmd="AMPR? Vpp",
+            set_cmd="AMPR {:.6f} Vpp",
             get_parser=float,
-            vals=vals.Numbers(min_value=0.4, max_value=1.00),
+            vals=vals.Numbers(min_value=2e-6, max_value=4.2),
         )
-        """Parameter amplitude_clock"""
-        self.noise_mode: Parameter = self.add_parameter(
-            name="noise_mode",
-            label="RF PLL loop filter mode",
-            get_cmd="NOIS?",
-            set_cmd="NOIS {}",
-            val_mapping={"Mode 1": 0, "Mode 2": 1},
-        )
+        """Parameter vpp_RF"""
+
+        # self.amplitude_HF: Parameter = self.add_parameter(
+        #     name="amplitude_HF",
+        #     label="Power of RF doubler output",
+        #     unit="dBm",
+        #     get_cmd="AMPH?",
+        #     set_cmd="AMPH {:.2f}",
+        #     get_parser=float,
+        #     vals=vals.Numbers(min_value=-10, max_value=13),
+        # )
+        # """Parameter amplitude_HF"""
+        # self.amplitude_clock: Parameter = self.add_parameter(
+        #     name="amplitude_clock",
+        #     label="Rear clock output",
+        #     unit="Vpp",
+        #     get_cmd="AMPC?",
+        #     set_cmd="AMPC {:.2f}",
+        #     get_parser=float,
+        #     vals=vals.Numbers(min_value=0.4, max_value=1.00),
+        # )
+        # """Parameter amplitude_clock"""
+        # self.noise_mode: Parameter = self.add_parameter(
+        #     name="noise_mode",
+        #     label="RF PLL loop filter mode",
+        #     get_cmd="NOIS?",
+        #     set_cmd="NOIS {}",
+        #     val_mapping={"Mode 1": 0, "Mode 2": 1},
+        # )
         """Parameter noise_mode"""
         self.enable_RF: Parameter = self.add_parameter(
             name="enable_RF",
@@ -112,41 +135,41 @@ class SG384(VisaInstrument):
             val_mapping={"OFF": 0, "ON": 1},
         )
         """Parameter enable_LF"""
-        self.enable_HF: Parameter = self.add_parameter(
-            name="enable_HF",
-            label="RF doubler output",
-            get_cmd="ENBH?",
-            set_cmd="ENBH {}",
-            val_mapping={"OFF": 0, "ON": 1},
-        )
-        """Parameter enable_HF"""
-        self.enable_clock: Parameter = self.add_parameter(
-            name="enable_clock",
-            label="Rear clock output",
-            get_cmd="ENBC?",
-            set_cmd="ENBC {}",
-            val_mapping={"OFF": 0, "ON": 1},
-        )
-        """Parameter enable_clock"""
-        self.offset_clock: Parameter = self.add_parameter(
-            name="offset_clock",
-            label="Rear clock offset voltage",
-            unit="V",
-            get_cmd="OFSC?",
-            set_cmd="OFSC {}",
-            get_parser=float,
-            vals=vals.Numbers(min_value=-2, max_value=2),
-        )
-        """Parameter offset_clock"""
-        self.offset_rearDC: Parameter = self.add_parameter(
-            name="offset_rearDC",
-            label="Rear DC offset voltage",
-            unit="V",
-            get_cmd="OFSD?",
-            set_cmd="OFSD {}",
-            get_parser=float,
-            vals=vals.Numbers(min_value=-10, max_value=10),
-        )
+        # self.enable_HF: Parameter = self.add_parameter(
+        #     name="enable_HF",
+        #     label="RF doubler output",
+        #     get_cmd="ENBH?",
+        #     set_cmd="ENBH {}",
+        #     val_mapping={"OFF": 0, "ON": 1},
+        # )
+        # """Parameter enable_HF"""
+        # self.enable_clock: Parameter = self.add_parameter(
+        #     name="enable_clock",
+        #     label="Rear clock output",
+        #     get_cmd="ENBC?",
+        #     set_cmd="ENBC {}",
+        #     val_mapping={"OFF": 0, "ON": 1},
+        # )
+        # """Parameter enable_clock"""
+        # self.offset_clock: Parameter = self.add_parameter(
+        #     name="offset_clock",
+        #     label="Rear clock offset voltage",
+        #     unit="V",
+        #     get_cmd="OFSC?",
+        #     set_cmd="OFSC {}",
+        #     get_parser=float,
+        #     vals=vals.Numbers(min_value=-2, max_value=2),
+        # )
+        # """Parameter offset_clock"""
+        # self.offset_rearDC: Parameter = self.add_parameter(
+        #     name="offset_rearDC",
+        #     label="Rear DC offset voltage",
+        #     unit="V",
+        #     get_cmd="OFSD?",
+        #     set_cmd="OFSD {}",
+        #     get_parser=float,
+        #     vals=vals.Numbers(min_value=-10, max_value=10),
+        # )
         """Parameter offset_rearDC"""
         self.offset_bnc: Parameter = self.add_parameter(
             name="offset_bnc",
@@ -167,15 +190,15 @@ class SG384(VisaInstrument):
             val_mapping={"AC": 0, "DC": 1},
         )
         """Parameter modulation_coupling"""
-        self.FM_deviation: Parameter = self.add_parameter(
-            name="FM_deviation",
-            label="Frequency modulation deviation",
-            unit="Hz",
-            get_cmd="FDEV?",
-            set_cmd="FDEV {:.1f}",
-            get_parser=float,
-            vals=vals.Numbers(min_value=0.1, max_value=32e6),
-        )
+        # self.FM_deviation: Parameter = self.add_parameter(
+        #     name="FM_deviation",
+        #     label="Frequency modulation deviation",
+        #     unit="Hz",
+        #     get_cmd="FDEV?",
+        #     set_cmd="FDEV {:.1f}",
+        #     get_parser=float,
+        #     vals=vals.Numbers(min_value=0.1, max_value=32e6),
+        # )
         """Parameter FM_deviation"""
         self.modulation_function: Parameter = self.add_parameter(
             name="modulation_function",
@@ -224,8 +247,6 @@ class SG384(VisaInstrument):
         )
         """Parameter modulation_type"""
         self.connect_message()
-
-
 
 
 class SRS_SG384(SG384):
