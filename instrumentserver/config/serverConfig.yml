@@ -1,0 +1,7 @@
+instruments:
+  artys7:
+    type: qcodes_driver.ArtyS7.ArtyS7.ArtyS7
+    initialize: true
+    init:
+      serial_port: "/dev/ttyUSB1"
+      sequencer_repo: "/home/server/Desktop/Codes/ent/quail/user_scripts"
